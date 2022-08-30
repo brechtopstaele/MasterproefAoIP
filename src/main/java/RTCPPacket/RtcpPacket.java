@@ -1,10 +1,12 @@
+package RTCPPacket;
+
 import org.pcap4j.packet.Packet;
 
 import java.util.Iterator;
 
-public class RTPCPacket implements Packet {
+public class RtcpPacket implements Packet {
     @Override
-    public Header getHeader() {
+    public RtcpHeader getHeader() {
         return null;
     }
 
