@@ -1,23 +1,44 @@
+package Support;
+
 import webphone.webphone;
 
 public class Caller extends Thread{
-    webphone wobj;
-    boolean startCall = false;
+    private webphone wobj;
+    private String serverIP;
+    private String targetIP;
 
-    void startCall(){
-        startCall = true;
+    public void startCall(){
+        wobj.API_Call(-1, targetIP);
     }
 
-    void endCall(){
+    public webphone getWebphone(){
+        return wobj;
+    }
+
+    public String getTarget(){
+        return targetIP;
+    }
+    public String getServer(){
+        return serverIP;
+    }
+
+    public void endCall(){
         wobj.API_Stop();
         wobj.API_Exit();
     }
 
-    boolean isRegistered(){
+    public boolean isRegistered(){
         return wobj.API_IsRegistered();
     }
 
-    void createWebphone(String serverAddress, String username, String password){
+    public int getCallStatus(){
+        return wobj.API_IsInCall();
+    }
+
+    public void createWebphone(String serverAddress, String username, String password, String target){
+        this.targetIP = target;
+        this.serverIP = serverAddress;
+
         wobj = new webphone();
 
         //Enter connection details
@@ -35,14 +56,16 @@ public class Caller extends Thread{
         wobj.API_SetParameter("transport", 0);
 
         //Set option for RTP stats
-        wobj.API_SetParameter("rtpstat", 1);
+//        wobj.API_SetParameter("rtpstat", 1);
 
         //Set option to use RTCP
-        wobj.API_SetParameter("rtcp", true);
+//        wobj.API_SetParameter("rtcp", true);
 
         //TODO: andere codecs?
         //Set option to use Opus codec
-        wobj.API_SetParameter("codec", "opus,opuswb,opusuwb,opusswb");
+//        wobj.API_SetParameter("codec", "opus,opuswb,opusuwb,opusswb");
+        wobj.API_SetParameter("codec", "def");
+
 
         //Set number of frames per packet
         int framesPerPacket = 0;
@@ -51,13 +74,14 @@ public class Caller extends Thread{
         //Lowest loglevel for uncluttered console
         wobj.API_SetParameter("loglevel", 1);
 
+        wobj.API_SetParameter("autoredial", 1);
+
+        //test voor NAT problemen
+        wobj.API_SetParameter("use_rport", 2);
+
         //Client automatically registers
         wobj.auto_register = 2;
 
         wobj.API_Start();
-    }
-
-    public void run(String target) {
-        wobj.API_Call(-1, target);
     }
 }
